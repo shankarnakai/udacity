@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 
-import { Car, cars as cars_list } from './cars';
+import { Car, cars as cars_list, buildFilter } from './cars';
 
 (async () => {
   let cars:Car[]  = cars_list;
@@ -68,15 +68,50 @@ import { Car, cars as cars_list } from './cars';
                 .send(`Welcome to the Cloud, ${name}!`);
   } );
 
-  // @TODO Add an endpoint to GET a list of cars
-  // it should be filterable by make with a query paramater
+  app.get("/cars", async (req: Request, res: Response) => {
+      const { make, car_type, model, cost, costOperator } = req.query;
+      const filter = buildFilter(make, car_type, model, parseInt(cost), costOperator)
+      const filteredCars = cars_list.filter(filter)
+      if(filteredCars.length == 0) {
+          return res.status(404).send("Not found cars that match the currenct criteria");
+      }
 
-  // @TODO Add an endpoint to get a specific car
-  // it should require id
-  // it should fail gracefully if no matching car is found
+      return res.status(200).type('json').send(filteredCars);
+  })
 
-  /// @TODO Add an endpoint to post a new car to our list
-  // it should require id, type, model, and cost
+  app.get("/cars/:id", async (req: Request, res: Response) => {
+      const { id } = req.params;
+      const result = cars_list.filter(car => car.id == id)
+
+      if(result.length == 0) {
+          return res.status(404).send(`Car with id($id) not found`);
+      }
+
+      return res.status(200).send(result[0]);
+  })
+
+  app.post("/cars", async (req: Request, res: Response) => {
+      const params = req.body
+      console.log("params", params);
+      if(
+          !params.id
+          || !params.type
+          || !params.model
+          || !params.cost
+      ) {
+          return res.status(403).send("Bad request, expected id, type, model and cost fields")
+      }
+
+      const newCar = {
+          id: params.id,
+          type: params.type,
+          model: params.model,
+          cost: params.cost,
+      }
+
+      cars_list.push(newCar)
+      return res.status(200).send(newCar)
+  })
 
   // Start the Server
   app.listen( port, () => {
