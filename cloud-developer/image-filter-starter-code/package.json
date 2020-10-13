@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf www/ || true",
     "build": "npm run clean && tsc && cp package.json www/package.json && mkdir www/tmp/ && cd www && zip -r Archive.zip . && cd ..",
-    "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts"
+    "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "jimp": "^0.16.1"
+    "inversify": "^5.0.1",
+    "jimp": "^0.16.1",
+    "reflect-metadata": "^0.1.13"
   }
 }
