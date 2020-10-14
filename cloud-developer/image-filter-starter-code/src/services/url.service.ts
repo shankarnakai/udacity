@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import { URL } from "url";
 
 @injectable()
@@ -17,14 +17,14 @@ export class UrlServiceNodeNative extends UrlService {
       return true;
     }
 
-    const protocolPattern = new RegExp("/^(.*):/");
+    const protocolPattern = new RegExp("^(.*):");
     const parsed = url.match(protocolPattern);
     let found;
     if (!parsed) {
       found = "http";
+    } else {
+      found = parsed[1].toLocaleLowerCase();
     }
-
-    found = parsed[1].toLocaleLowerCase();
 
     return protocolList
       .map((protocol) => protocol.toLowerCase())

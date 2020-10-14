@@ -3,10 +3,11 @@ import { inject, injectable } from "inversify";
 import Jimp from "jimp";
 import util from "util";
 import { UrlService } from "../../services/url.service";
+import { ImageExtension } from "./image.model";
 
 @injectable()
 export abstract class ImageService {
- public abstract async valid(url: string): Promise<boolean>;
+ public abstract async validFromUrl(url: string, fileExtension: string[], providers: string[]): boolean;
  public abstract async download(url: string): Promise<Jimp>;
  public abstract async insertImageFilter(image: Jimp): Promise<Jimp>;
  public abstract async save(image: Jimp, outpath: string): Promise<string>;
@@ -20,10 +21,12 @@ export class ImageServiceLive extends ImageService {
       super();
   }
 
-  public async valid(url: string): Promise<boolean> {
-    const hasValidExt = !!url.match(/\w+\.(jpg|jpeg|gif|png|tiff|bmp)$/gi);
+  public validFromUrl(url: string, fileExtension: ImageExtension[], providers: string[]): boolean {
+    const extStr = fileExtension.join("|");
+    const extPattern = new RegExp(`\\w+\\.(${extStr})$`, "gi");
+    const hasValidExt = !!url.match(extPattern);
     return hasValidExt
-    && this.urlService.isValid(url, ["http", "https"]);
+    && this.urlService.isValid(url, providers);
   }
 
   public async download(url: string): Promise<Jimp> {

@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { inject, injectable } from "inversify";
-import { ImageService } from "./image.service";
+import { ImageMiddleware } from "./image.middleware";
 
 /**************************************************************************** */
 // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
@@ -26,7 +26,7 @@ export abstract class ImageController {
 
 @injectable()
 export class ImageControllerLive extends ImageController {
-  constructor(@inject(ImageService) private imgService: ImageService) {
+  constructor(@inject(ImageMiddleware) private imgMiddleware: ImageMiddleware) {
     super();
   }
 
@@ -37,8 +37,7 @@ export class ImageControllerLive extends ImageController {
   public routes(): Router {
     const router = Router();
 
-    // define the home page route
-    router.get("/filteredimage", this.filterImage);
+    router.get("/filteredimage", [this.imgMiddleware.validate()], this.filterImage);
     return router;
   }
 }

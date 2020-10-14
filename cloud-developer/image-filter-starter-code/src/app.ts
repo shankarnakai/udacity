@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import express from "express";
+import express, { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { ImageController } from "./modules/image/image.controller";
 
@@ -24,6 +24,7 @@ export class AppLive extends App {
     const port = process.env.PORT || 8082;
 
     // Use the body parser middleware for post requests
+    app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use("/", this.imgController.routes());
 
@@ -31,6 +32,13 @@ export class AppLive extends App {
     // Displays a simple message to the user
     app.get("/", async (req, res) => {
       res.send("try GET /filteredimage?image_url={{}}");
+    });
+
+    // tslint:disable-next-line: variable-name
+    app.use((err: any, _req: Request, res: Response): void => {
+      // tslint:disable-next-line: no-console
+      console.error(err.stack);
+      res.status(500).send("Sorry, we had a problem in the server. Please try later.");
     });
 
     // Start the Server

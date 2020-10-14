@@ -1,9 +1,7 @@
 import { Container } from "inversify";
 import "reflect-metadata";
 import { App, AppLive } from "./app";
-import { ImageController, ImageControllerLive } from "./modules/image/image.controller";
 import ImageModule from "./modules/image/image.module";
-import { ImageService, ImageServiceLive } from "./modules/image/image.service";
 import { UrlService, UrlServiceNodeNative } from "./services/url.service";
 
 const generalModule = new Container();
