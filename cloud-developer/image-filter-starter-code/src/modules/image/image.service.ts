@@ -7,11 +7,12 @@ import { ImageExtension } from "./image.model";
 
 @injectable()
 export abstract class ImageService {
- public abstract async validFromUrl(url: string, fileExtension: string[], providers: string[]): boolean;
+ public abstract validFromUrl(url: string, fileExtension: string[], providers: string[]): boolean;
+
  public abstract async download(url: string): Promise<Jimp>;
- public abstract async insertImageFilter(image: Jimp): Promise<Jimp>;
+ public abstract async resize(image: Jimp, width: number, height: number): Promise<Jimp>;
+ public abstract async applyGreyFilter(image: Jimp): Promise<Jimp>;
  public abstract async save(image: Jimp, outpath: string): Promise<string>;
- public abstract async filterImageFromURL(url: string): Promise<string>;
  public abstract deleteLocalFiles(files: string[]): void;
 }
 
@@ -30,28 +31,15 @@ export class ImageServiceLive extends ImageService {
   }
 
   public async download(url: string): Promise<Jimp> {
+    // TODO: Change for a generic implementation to remove the need to Jimp for this action.
     return Jimp.read(url);
   }
 
-  public async insertImageFilter(image: Jimp): Promise<Jimp> {
-    return image
-      .resize(256, 256) // resize
-      .quality(60) // set JPEG quality
-      .greyscale(); // set greyscale
-  }
-
   public async save(image: Jimp, outpath: string): Promise<string> {
+    // TODO: Change the image type to a buffer to make the implemention more generic and remove the Jimp dependency
     const fullPath = __dirname + outpath;
     const jimpWrite = util.promisify(image.write);
     return jimpWrite(fullPath).then(() => fullPath);
-  }
-
-  public async filterImageFromURL(url: string): Promise<string> {
-    const outpath =
-      "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
-    return this.download(url)
-      .then((image) => this.insertImageFilter(image))
-      .then((image) => this.save(image, outpath));
   }
 
   public async deleteLocalFiles(files: string[]) {
