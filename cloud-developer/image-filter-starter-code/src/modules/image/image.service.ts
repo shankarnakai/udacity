@@ -8,10 +8,7 @@ import { ImageExtension } from "./image.model";
 @injectable()
 export abstract class ImageService {
  public abstract validFromUrl(url: string, fileExtension: string[], providers: string[]): boolean;
-
  public abstract async download(url: string): Promise<Jimp>;
- public abstract async resize(image: Jimp, width: number, height: number): Promise<Jimp>;
- public abstract async applyGreyFilter(image: Jimp): Promise<Jimp>;
  public abstract async save(image: Jimp, outpath: string): Promise<string>;
  public abstract deleteLocalFiles(files: string[]): void;
 }
