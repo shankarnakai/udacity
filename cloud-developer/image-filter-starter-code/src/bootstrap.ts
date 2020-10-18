@@ -1,11 +1,13 @@
 import { Container } from "inversify";
 import "reflect-metadata";
-import { App, AppLive } from "./app";
-import ImageModule from "./modules/image/image.module";
 import { UrlService, UrlServiceNodeNative } from "./services/url.service";
 
+import ImageModule from "./modules/image/image.module";
+
+import { Main, Runner } from "./runner";
+
 const generalModule = new Container();
-generalModule.bind<App>(App).to(AppLive);
+generalModule.bind<Runner>(Runner).to(Main);
 generalModule.bind<UrlService>(UrlService).to(UrlServiceNodeNative);
 
 const moduleList = [ImageModule];
@@ -14,4 +16,4 @@ const container = moduleList.reduce(
   generalModule,
 );
 
-export default container.get<App>(App);
+export default container.get<Runner>(Runner);

@@ -4,12 +4,12 @@ import { inject, injectable } from "inversify";
 import { ImageController } from "./modules/image/image.controller";
 
 @injectable()
-export abstract class App {
+export abstract class Runner {
   public abstract run(): void;
 }
 
 @injectable()
-export class AppLive extends App {
+export class Main extends Runner {
   constructor(
     @inject(ImageController) private imgController: ImageController,
   ) {
@@ -21,7 +21,7 @@ export class AppLive extends App {
     const app = express();
 
     // Set the network port
-    const port = process.env.PORT || 8082;
+    const port = process.env.PORT || 8080;
 
     // Use the body parser middleware for post requests
     app.use(bodyParser.urlencoded({ extended: false }));
