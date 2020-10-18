@@ -41,6 +41,10 @@ export class ImageContext {
       .then((image) => this.imgService.save(image, outpath));
   }
 
+  public deleteFile(path: string): void {
+    this.imgService.deleteLocalFiles([path]);
+  }
+
   private async resize(image: Jimp, width: number, height: number): Promise<Jimp> {
     return image.resize(width, height);
   }

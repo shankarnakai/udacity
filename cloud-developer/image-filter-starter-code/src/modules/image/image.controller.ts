@@ -36,13 +36,20 @@ export class ImageControllerLive extends ImageController {
 
   public async filterImage(req: Request, res: Response): Promise<void> {
     try {
-      const filteredImage = await this.context.filterImageFromURL(req.query.image_url);
+      const filteredImage = await this.context.filterImageFromURL(
+        req.query.image_url,
+      );
       res.status(200).sendFile(filteredImage);
+      res.on("finish", () => {
+        // TODO: Define criteria to clean files.
+        //       Ex: Just delete files if they are bigger than 10, or size exceed certain amount.
+        this.cleanFile(filteredImage);
+      });
     } catch (err) {
+      // tslint:disable-next-line: no-console
       console.error(err);
       res.status(500).send({
-        message:
-          "Unexpected error applying the filter in the image",
+        message: "Unexpected error applying the filter in the image",
       });
     }
   }
@@ -53,8 +60,17 @@ export class ImageControllerLive extends ImageController {
     router.get(
       "/filteredimage",
       [this.imgMiddleware.validate()],
-      (req: Request, res: Response) => this.filterImage(req, res),
+      (req: Request, res: Response) => this.filterImage(req, res)
     );
     return router;
+  }
+
+  private cleanFile(path: string) {
+    try {
+      this.context.deleteFile(path);
+    } catch (e) {
+      // tslint:disable-next-line: no-console
+      console.error("Error removing ", path);
+    }
   }
 }
