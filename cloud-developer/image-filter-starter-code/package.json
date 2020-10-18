@@ -2,11 +2,13 @@
   "name": "udacity-c2-image-filter",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "start": "node server.js",
+    "tsc": "tsc",
     "clean": "rm -rf www/ || true",
-    "build": "npm run clean && tsc && cp package.json www/package.json && mkdir www/tmp/ && cd www && zip -r Archive.zip . && cd ..",
+    "build": "npm run clean && tsc && cp .npmrc www/.npmrc && cp package.json www/package.json && mkdir www/tmp/ && cd www && zip -r Archive.zip . && cd ..",
     "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts"
   },
   "repository": {
@@ -22,13 +24,21 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
     "@types/express": "^4.17.0",
+    "@types/jest": "^26.0.14",
     "@types/node": "^11.13.17",
+    "jest": "^26.5.3",
+    "ts-jest": "^26.4.1",
     "ts-node-dev": "^1.0.0-pre.40",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "jimp": "^0.6.4"
+    "inversify": "^5.0.1",
+    "jimp": "^0.16.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "engines": {
+    "node": "12.16.1"
   }
 }
