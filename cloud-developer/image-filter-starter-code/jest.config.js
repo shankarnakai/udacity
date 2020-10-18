@@ -1,5 +1,6 @@
 module.exports = {
-  testEnvironment: 'node',
+  timers: "fake",
+  testEnvironment: 'jsdom',
   roots: [
     "<rootDir>/src"
   ],

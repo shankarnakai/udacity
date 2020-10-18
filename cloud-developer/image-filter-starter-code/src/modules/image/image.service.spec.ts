@@ -32,5 +32,26 @@ describe("ImageServiceLive", () => {
       const result = imageService.validFromUrl(url, extension, protocols);
       expect(result).toBeTruthy();
     });
+
+    it("Should be invalid given a valid url with a invalid image extension", () => {
+      const url =
+        "https://fakeurl.com/fake-image.tar";
+      const protocols = ["http", "https"];
+      const extension = [ImageExtension.JPG];
+      urlService.isValid.mockReturnValue(true);
+      const result = imageService.validFromUrl(url, extension, protocols);
+      expect(result).toBeFalsy();
+    });
+
+    it("Should be invalid given a invalid url with a valid image extension", () => {
+      const url =
+        "3wwwinvalid-url/fake-image.jpg";
+      const protocols = ["http", "https"];
+      const extension = [ImageExtension.JPG];
+      urlService.isValid.mockReturnValue(false);
+
+      const result = imageService.validFromUrl(url, extension, protocols);
+      expect(result).toBeFalsy();
+    });
   });
 });

@@ -5,41 +5,49 @@ import { ImageService } from "./image.service";
 
 @injectable()
 export class ImageContext {
-  private static readonly IMAGE_WIDTH = 256;
-  private static readonly IMAGE_HEIGHT = 256;
+  public static readonly IMAGE_VALID_EXTENSION = [
+    ImageExtension.JPG,
+    ImageExtension.JPEG,
+    ImageExtension.GIF,
+    ImageExtension.PNG,
+    ImageExtension.TIFF,
+    ImageExtension.BMP,
+  ];
 
-    constructor(@inject(ImageService) private imgService: ImageService) {}
+  public static readonly HTTP_VALID_PROTOCOLS = ["http", "https"];
 
-    public validateImageUrl(url: string): boolean {
-        const validExtension = [
-          ImageExtension.JPG,
-          ImageExtension.JPEG,
-          ImageExtension.GIF,
-          ImageExtension.PNG,
-          ImageExtension.TIFF,
-          ImageExtension.BMP,
-        ];
+  public static readonly IMAGE_WIDTH = 256;
+  public static readonly IMAGE_HEIGHT = 256;
 
-        const validProtocols = ["http", "https"];
+  constructor(@inject(ImageService) private imgService: ImageService) {}
 
-        return this.imgService.validFromUrl(url, validExtension, validProtocols);
-    }
+  public validateImageUrl(url: string): boolean {
+    return this.imgService.validFromUrl(
+      url,
+      ImageContext.IMAGE_VALID_EXTENSION,
+      ImageContext.HTTP_VALID_PROTOCOLS,
+    );
+  }
 
   public async filterImageFromURL(url: string): Promise<string> {
     const outpath =
       "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
-    return this.imgService.download(url)
-      .then((image) => this.resize(image, ImageContext.IMAGE_WIDTH, ImageContext.IMAGE_HEIGHT))
+    return this.imgService
+      .download(url)
+      .then((image) => {
+        return this.resize(image, ImageContext.IMAGE_WIDTH, ImageContext.IMAGE_HEIGHT);
+      })
       .then((image) => this.applyGreyFilter(image))
       .then((image) => this.imgService.save(image, outpath));
   }
 
-  private async resize(image: Jimp, width: number, height: number) {
+  private async resize(image: Jimp, width: number, height: number): Promise<Jimp> {
     return image.resize(width, height);
   }
 
   private async applyGreyFilter(image: Jimp): Promise<Jimp> {
-    return image.quality(60) // set JPEG quality
+    return image
+      .quality(60) // set JPEG quality
       .greyscale(); // set greyscale
   }
 }
