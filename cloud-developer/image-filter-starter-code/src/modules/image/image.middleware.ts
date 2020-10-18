@@ -18,9 +18,9 @@ export class ImageMiddlewareLive extends ImageMiddleware {
       if (!this.imgContext.validateImageUrl(req.query.image_url)) {
         res.status(422).send({
           message:
-            "Url it's not accessible or the image extension it's not a image.",
+            "This is not valid url or the image extension it's not image.",
         });
-        next(false);
+        return;
       }
 
       next();
