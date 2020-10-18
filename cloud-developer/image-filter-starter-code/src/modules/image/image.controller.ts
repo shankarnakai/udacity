@@ -50,7 +50,11 @@ export class ImageControllerLive extends ImageController {
   public routes(): Router {
     const router = Router();
 
-    router.get("/filteredimage", [this.imgMiddleware.validate()], (req, res) => this.filterImage(req, res));
+    router.get(
+      "/filteredimage",
+      [this.imgMiddleware.validate()],
+      (req: Request, res: Response) => this.filterImage(req, res),
+    );
     return router;
   }
 }
