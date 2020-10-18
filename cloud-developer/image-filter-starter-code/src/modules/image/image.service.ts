@@ -35,8 +35,7 @@ export class ImageServiceLive extends ImageService {
   public async save(image: Jimp, outpath: string): Promise<string> {
     // TODO: Change the image type to a buffer to make the implemention more generic and remove the Jimp dependency
     const fullPath = __dirname + outpath;
-    const jimpWrite = util.promisify(image.write);
-    return jimpWrite(fullPath).then(() => fullPath);
+    return image.writeAsync(fullPath).then(() => fullPath);
   }
 
   public async deleteLocalFiles(files: string[]) {

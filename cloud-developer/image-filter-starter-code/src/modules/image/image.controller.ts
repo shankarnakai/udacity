@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { inject, injectable } from "inversify";
+import { ImageContext } from "./image.context";
 import { ImageMiddleware } from "./image.middleware";
 
 /**************************************************************************** */
@@ -20,24 +21,36 @@ import { ImageMiddleware } from "./image.middleware";
 
 @injectable()
 export abstract class ImageController {
-  public abstract filterImage(req: Request, res: Response): void;
+  public abstract async filterImage(req: Request, res: Response): Promise<void>;
   public abstract routes(): Router;
 }
 
 @injectable()
 export class ImageControllerLive extends ImageController {
-  constructor(@inject(ImageMiddleware) private imgMiddleware: ImageMiddleware) {
+  constructor(
+    @inject(ImageMiddleware) private imgMiddleware: ImageMiddleware,
+    @inject(ImageContext) private context: ImageContext,
+  ) {
     super();
   }
 
-  public filterImage(req: Request, res: Response): void {
-    throw new Error("Method not implemented.");
+  public async filterImage(req: Request, res: Response): Promise<void> {
+    try {
+      const filteredImage = await this.context.filterImageFromURL(req.query.image_url);
+      res.status(200).sendFile(filteredImage);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({
+        message:
+          "Unexpected error applying the filter in the image",
+      });
+    }
   }
 
   public routes(): Router {
     const router = Router();
 
-    router.get("/filteredimage", [this.imgMiddleware.validate()], this.filterImage);
+    router.get("/filteredimage", [this.imgMiddleware.validate()], (req, res) => this.filterImage(req, res));
     return router;
   }
 }

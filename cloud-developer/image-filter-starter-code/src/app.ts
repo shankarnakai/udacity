@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { ImageController } from "./modules/image/image.controller";
 
@@ -35,10 +35,12 @@ export class AppLive extends App {
     });
 
     // tslint:disable-next-line: variable-name
-    app.use((err: any, _req: Request, res: Response): void => {
+    app.use((err: any, _req: Request, res: Response, next: NextFunction): void => {
       // tslint:disable-next-line: no-console
-      console.error(err.stack);
-      res.status(500).send("Sorry, we had a problem in the server. Please try later.");
+      if (err) {
+        console.error(err.stack);
+        res.status(500).send("Sorry, we had a problem in the server. Please try later.");
+      }
     });
 
     // Start the Server
