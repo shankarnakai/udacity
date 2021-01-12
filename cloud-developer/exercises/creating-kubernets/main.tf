@@ -314,3 +314,4 @@ resource "aws_instance" "bastion" {
     local.kube_cluster_tag, "shared",
   )
 }
+
